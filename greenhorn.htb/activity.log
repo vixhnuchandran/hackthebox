@@ -12,7 +12,6 @@ CrackStation.net: Website used for cracking password hashes (specifically SHA-51
 Netcat (nc): Tool used to establish a reverse shell connection to the compromised machine.
 PDF24: Tool used for extracting images from a PDF file found on the compromised machine.
 Depix: Tool used to clean and deblur text in images, aiding in the extraction of hidden information.
-John the Ripper / Hashcat: Used for password cracking, although CrackStation was primarily used during this engagement.
 
 PHASE I: RECONNAISSANCE
 --------------------
@@ -94,5 +93,11 @@ PHASE IV: MAINTAINING ACCESS
 
 PHASE V: CLEARING TRACKS
 --------------------
-- As part of good practice, we cleared any logs or traces of our actions from the compromised machine to avoid detection.
-- Specific methods may include removing shell history, clearing logs, and other evidence of exploitation.
+    - As part of good practice, we cleared any logs or traces of our actions from the compromised machine to avoid detection.
+    - Specific methods may include removing shell history, clearing logs, and other evidence of exploitation.
+
+LESSONS LEARNED & NEWLY LEARNED TECHNIQUES
+    - PluckCMS v4.7.18 has an RCE vulnerability that can be exploited via module installation.
+    - Reverse shell uploads via a CMS are effective if you find a vulnerability that allows arbitrary file uploads.
+    - Deblurring techniques (Depix) are valuable when dealing with blurred images or text, especially in forensic analysis.
+    - Tools like CrackStation and John the Ripper are indispensable for password cracking when hashes are found in exposed files.
