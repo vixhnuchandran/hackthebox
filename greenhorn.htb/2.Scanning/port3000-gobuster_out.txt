@@ -1,0 +1,5 @@
+/admin               [36m (Status: 303)[0m [Size: 38][34m [--> /user/login][0m
+/issues              [36m (Status: 303)[0m [Size: 38][34m [--> /user/login][0m
+/v2                  [33m (Status: 401)[0m [Size: 50]
+/explore             [36m (Status: 303)[0m [Size: 41][34m [--> /explore/repos][0m
+/milestones          [36m (Status: 303)[0m [Size: 38][34m [--> /user/login][0m

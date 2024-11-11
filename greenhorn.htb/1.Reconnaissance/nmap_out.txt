@@ -1,0 +1,10 @@
+# Nmap 7.94SVN scan initiated Tue Nov 12 02:11:44 2024 as: /usr/lib/nmap/nmap --privileged -oN 1.Reconnaissance/nmap_out.txt 10.10.11.25
+Nmap scan report for greenhorn.htb (10.10.11.25)
+Host is up (0.18s latency).
+Not shown: 997 closed tcp ports (reset)
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+3000/tcp open  ppp
+
+# Nmap done at Tue Nov 12 02:11:46 2024 -- 1 IP address (1 host up) scanned in 2.21 seconds

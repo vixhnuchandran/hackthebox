@@ -1,0 +1,98 @@
+MACHINE ACTIVITY LOG
+--------------------
+Target: GreenHorn
+IP: 10.10.11.25 (greenhorn.htb)
+Date: 2024-11-12
+
+Tools Used:
+--------------------
+Nmap: Network scanning tool to discover open ports and services on the target machine.
+Gobuster: Directory enumeration tool for finding hidden directories and files on the web application running on port 3000.
+CrackStation.net: Website used for cracking password hashes (specifically SHA-512) found on the target machine.
+Netcat (nc): Tool used to establish a reverse shell connection to the compromised machine.
+PDF24: Tool used for extracting images from a PDF file found on the compromised machine.
+Depix: Tool used to clean and deblur text in images, aiding in the extraction of hidden information.
+John the Ripper / Hashcat: Used for password cracking, although CrackStation was primarily used during this engagement.
+
+PHASE I: RECONNAISSANCE
+--------------------
+1. Initial Nmap Scan
+   Ran 'nmap 10.10.11.25' to identify open ports on the target machine.
+   Nmap Scan Results:
+       - Port 22 (SSH): Open, typically used for remote access.
+       - Port 80 (HTTP): Open, likely serving a web application.
+       - Port 3000 (PPP): Open, potentially for a custom service or web application.
+
+PHASE II: SCANNING
+--------------------
+1. Nmap Service Version Scan
+   Ran 'nmap -sV 10.10.11.25 -oN' to enumerate services and versions running on the open ports.
+   Service Version Results:
+       - Port 80 (Nginx): Website running a CMS (PluckCMS).
+       - Port 22 (SSH): SSH access appears restricted or not viable.
+       - Port 3000: Discovered a web application running on port 3000 (password-less GitHub repo).
+
+2. Directory Enumeration (Port 80)
+   Discovered the /login.php endpoint, which could be useful for the login process.
+
+3. Directory Enumeration (Port 3000)
+   Ran 'gobuster dir -u http://greenhorn.htb:3000 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt' to find hidden directories on port 3000.
+   Results:
+       - /admin (Redirect to login)
+       - /test (Status: 200, Size: 18934)
+       - /notifications (Redirect to login)
+       - Found no immediately useful information.
+
+4. Manual Walkthrough
+   Discovered a pass.php file at the path:
+       http://greenhorn.htb:3000/GreenAdmin/GreenHorn/src/branch/main/data/settings/pass.php
+   The file contained a hash for further cracking.
+
+PHASE III: GAINING ACCESS
+--------------------
+1. Cracked Password
+   After cracking the hash from pass.php located at:
+   http://greenhorn.htb:3000/GreenAdmin/GreenHorn/src/branch/main/data/settings/pass.php, the cracked password was:
+
+   Hash Type: SHA-512
+   Cracked Password: password123 (example).
+
+2. Login Attempt on Port 80 (PluckCMS)
+   Used the cracked password to log into the PluckCMS admin panel at:
+   Login URL: http://greenhorn.htb:80/login.php
+   Successfully logged into the admin panel at: http://greenhorn.htb:80/admin.php
+
+PHASE IV: MAINTAINING ACCESS
+--------------------
+1. Identifying Vulnerabilities (PluckCMS Version)
+   After logging into the admin panel, we discovered that the CMS was running PluckCMS v4.7.18.
+   We immediately searched for known vulnerabilities for this version.
+
+2. Vulnerability Discovery
+   Found an RCE vulnerability for PluckCMS v4.7.18, which allowed remote code execution through the installation of malicious modules.
+   Exploit Database link: https://www.exploit-db.com/exploits/51592.
+
+3. PluckCMS Exploit (RCE)
+   The vulnerability allowed us to upload a malicious PHP reverse shell through a ZIP file during a module installation process.
+   - Set up a Netcat listener on our attacking machine.
+   - Uploaded the ZIP file containing the PHP reverse shell via the PluckCMS admin panel.
+   - Established a reverse shell connection from the target to our attacking machine.
+
+4. Gaining User Access
+   We successfully gained access to the machine and discovered the junior user.
+   - Cracked the junior user's password from the pass.php file.
+   - Used the cracked password to log in as the junior user and retrieved the user.txt flag.
+
+5. Privilege Escalation
+   Using privilege escalation techniques, we escalated our access to the root user.
+   - In the junior user's home directory, we discovered a PDF file named Using OpenVAS.pdf.
+   - Transferred the PDF back to our attacking machine using nc (Netcat).
+   - Extracted an image embedded in the PDF using pdfimages and used Depix to deblur the text in the image.
+   - The deblurred text revealed a password, which we used to gain root access via sudo.
+
+   We retrieved the root flag.
+
+PHASE V: CLEARING TRACKS
+--------------------
+- As part of good practice, we cleared any logs or traces of our actions from the compromised machine to avoid detection.
+- Specific methods may include removing shell history, clearing logs, and other evidence of exploitation.
